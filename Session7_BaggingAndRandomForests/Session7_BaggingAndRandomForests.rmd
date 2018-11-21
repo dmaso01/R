@@ -13,6 +13,15 @@ body {
 }
 h1 {
   font-size: 2rem;
+  margin-bottom: 1rem;
+}
+span.slide {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  background-color: #562435;
+  color: white;
+  padding: 0.5rem;
 }
 </style>
 
@@ -22,8 +31,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <h1>Bagging for Regression Trees</h1>
 
-Slide 11 - Apply bagging to the Boston data using the randomForest package in R
-```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA}
+<span class="slide">Slide 11</span> - Apply bagging to the Boston data using the randomForest package in R
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
 library(randomForest)
 library(MASS)
 set.seed(1)
@@ -33,8 +42,8 @@ bag.boston = randomForest(medv~., data=Boston, subset=train, mtry=13, importance
 bag.boston
 ```
 
-Slide 12 - How well does this bagged model perform on the test set?
-```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+<span class="slide">Slide 12</span> - How well does this bagged model perform on the test set?
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
 yhat.bag = predict(bag.boston, newdata=Boston[-train, ])
 boston.test = Boston[-train, "medv"]
 plot(yhat.bag, boston.test)
@@ -46,8 +55,8 @@ yhat.bag = predict(bag.boston, newdata=Boston[-train, ])
 mean((yhat.bag-boston.test)^2)
 ```
 
-Slide 14 - A comparison of Error Rates for Boston Housing Data
-```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+<span class="slide">Slides 13 & 14</span> - A comparison of Error Rates for Boston Housing Data
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
 set.seed(1)
 train = sample(1:nrow(Boston), nrow(Boston)*0.5)
 train.df = Boston[train,]
@@ -63,8 +72,8 @@ abline(h=myForest1$test$mse[1], lty=2, col="red")
 
 <h1>Bagging for Classification Trees</h1>
 
-Slide 17 - Apply bagging to the Carseats data using the randomForest package in R
-```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA}
+<span class="slide">Slide 17</span> - Apply bagging to the Carseats data using the randomForest package in R
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
 library(ISLR)
 library(randomForest)
 High = ifelse(Carseats$Sales <= 8, "No", "Yes")
@@ -78,8 +87,8 @@ yhat.carseats= predict(bag.carseats, newdata=Carseats.test)
 table(yhat.carseats, High.test)
 ```
 
-Slide 21 - Code to obtain the plot on [Slide 20]
-```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+<span class="slide">Slides 20-31</span> - Code to obtain the plot[s] on [Slides 20, 24, 28 & 31]
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
 library(ISLR)
 library(randomForest)
 data(Carseats)
@@ -88,6 +97,69 @@ Carseats.mv = data.frame(Carseats, High)
 Carseats.mv = Carseats.mv[, -1]
 set.seed(2)
 train = sample(400, 200)
-Carseats.mv.test = Carseats.mv[-train]
+
+#CALCULATE AND PLOT THE BLACK LINE
+Carseats.mv.test = Carseats.mv[-train, ]
 High.mv.test = Carseats.mv[-train, 11]
+test.error.mv = rep(0, 300)
+for (i in 1:300) {
+  set.seed(4)
+  bag.carseats = randomForest(High ~ ., Carseats.mv, subset=train, mtry=10, ntree=i)
+  yhat.carseats= predict(bag.carseats, newdata=Carseats.mv.test)
+  test.error.mv[i] = (table(yhat.carseats, High.mv.test)[1, 2] + table(yhat.carseats, High.mv.test)[2, 1])/200
+}
+plot(test.error.mv, 
+  xlab="Number of Bootstrap Data Sets", 
+  ylab="Test Error Rate", 
+  type="l", 
+  ylim=c(0.10, 0.35)
+)
+
+#PLOT THE RED LINE (Test Error Rate for 1 Decision Tree)
+abline(h=test.error.mv[1], lty=2, col="red")
+
+#CALCULATE AND PLOT THE BLUE LINE
+Carseats.test = Carseats[-train, -1]
+High.ave.test = High.mv.test
+test.error.ave = rep(0, 300)
+for (j in 1:300) {
+  set.seed(2)
+  bag.carseats.ave = randomForest(Sales ~ ., Carseats, subset=train, mtry=10, ntree=j)
+  yhat.carseats = predict(bag.carseats.ave, newdata=Carseats.test)
+  yhat.carseats.class = ifelse(yhat.carseats <= 8, "No", "Yes")
+  test.error.ave[j] = (table(yhat.carseats.class, High.ave.test)[1, 2] + table(yhat.carseats.class, High.ave.test)[2, 1])/200
+}
+lines(test.error.ave, col="blue")
+
+#IMPROVED CODE - ORANGE LINE
+data("Carseats")
+High = ifelse(Carseats$Sales <= 8, "No", "Yes")
+set.seed(2)
+train = sample(1:nrow(Carseats), nrow(Carseats)/2)
+Carseats = data.frame(Carseats, High)
+x_train = Carseats[train, -c(1, 12)]
+y_train = Carseats[train, "High"]
+x_test = Carseats[-train, -c(1, 12)]
+y_test = Carseats[-train, "High"]
+set.seed(2)
+bag.carseats = randomForest(x=x_train, y=y_train, xtest=x_test, ytest=y_test, ntree=300, mtry=10)
+length(bag.carseats$test$err.rate[ , 1])
+lines(bag.carseats$test$err.rate[,1], col="orange")
+
+#REGRESSION TREE - GREEN LINE
+x_train.ave = Carseats[train, -c(1, 12)]
+y_train.ave = Carseats[train, "Sales"]
+x_test.ave = Carseats[-train, -c(1, 12)]
+y_test.ave = Carseats[-train, "Sales"]
+test.error.ave.imp = rep(0, 300)
+for (i in 1:300) {
+  set.seed(2)
+  bag.carseats = randomForest(x=x_train.ave, y=y_train.ave, xtest=x_test.ave, ytest=y_test.ave, ntree=i, mtry=10)
+  yhat.High.ave = ifelse(bag.carseats$test$predicted <= 8, "No", "Yes")
+  test.error.ave.imp[i] = mean(yhat.High.ave != y_test)
+}
+lines(test.error.ave.imp, col="green")
+
+#LEGEND
+legend("topright", legend = C("single tree", "majority vote", "taking average", "majority vote improved", "taking average improved"), col=c("red", "black", "blue", "orange", "green"), lty=c(2, 1, 1, 1, 1))
 ```
