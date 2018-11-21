@@ -1,0 +1,93 @@
+---
+output: html_document
+---
+<style>
+html {
+  font-family: Georgia;
+  font-size: inherit;
+}
+body {
+  font-family: inherit;
+  font-size: inherit;
+  font-variant-numeric: lining-nums;
+}
+h1 {
+  font-size: 2rem;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<h1>Bagging for Regression Trees</h1>
+
+Slide 11 - Apply bagging to the Boston data using the randomForest package in R
+```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA}
+library(randomForest)
+library(MASS)
+set.seed(1)
+train = sample(1:nrow(Boston), nrow(Boston)/2)
+set.seed(6)
+bag.boston = randomForest(medv~., data=Boston, subset=train, mtry=13, importance=TRUE)
+bag.boston
+```
+
+Slide 12 - How well does this bagged model perform on the test set?
+```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+yhat.bag = predict(bag.boston, newdata=Boston[-train, ])
+boston.test = Boston[-train, "medv"]
+plot(yhat.bag, boston.test)
+abline(0, 1)
+mean((yhat.bag - boston.test)^2)
+set.seed(6)
+bag.boston = randomForest(medv ~ ., data=Boston, subset=train, mtry=13, ntree=25, importance=TRUE)
+yhat.bag = predict(bag.boston, newdata=Boston[-train, ])
+mean((yhat.bag-boston.test)^2)
+```
+
+Slide 14 - A comparison of Error Rates for Boston Housing Data
+```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+set.seed(1)
+train = sample(1:nrow(Boston), nrow(Boston)*0.5)
+train.df = Boston[train,]
+test.df = Boston[-train,]
+x_train = train.df[-14]
+x_test = test.df[-14]
+y_train = train.df$medv
+y_test = test.df$medv
+myForest1 = randomForest(x=x_train, y=y_train, xtest=x_test, ytest=y_test, ntree=100, mtry=13)
+plot(1:100, myForest1$test$mse, main="Test Error from Random Forests on the Boston dataset", xlab="Number of Trees", ylab="Test MSE", type= "l", ylim=c(12,22), lwd=1)
+abline(h=myForest1$test$mse[1], lty=2, col="red")
+```
+
+<h1>Bagging for Classification Trees</h1>
+
+Slide 17 - Apply bagging to the Carseats data using the randomForest package in R
+```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA}
+library(ISLR)
+library(randomForest)
+High = ifelse(Carseats$Sales <= 8, "No", "Yes")
+Carseats = data.frame(Carseats, High)
+set.seed(2)
+train = sample(1:nrow(Carseats), nrow(Carseats)/2)
+Carseats.test = Carseats[-train,]
+High.test = Carseats[-train, "High"]
+bag.carseats = randomForest(High ~ .-Sales, data=Carseats, subset=train, mtry=10)
+yhat.carseats= predict(bag.carseats, newdata=Carseats.test)
+table(yhat.carseats, High.test)
+```
+
+Slide 21 - Code to obtain the plot on [Slide 20]
+```{r echo=TRUE, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+library(ISLR)
+library(randomForest)
+data(Carseats)
+High = ifelse(Carseats$Sales <= 8, "No", "Yes")
+Carseats.mv = data.frame(Carseats, High)
+Carseats.mv = Carseats.mv[, -1]
+set.seed(2)
+train = sample(400, 200)
+Carseats.mv.test = Carseats.mv[-train]
+High.mv.test = Carseats.mv[-train, 11]
+```

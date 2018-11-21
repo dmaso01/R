@@ -1,0 +1,130 @@
+---
+output: html_document
+---
+<style>
+html {
+  font-family: Georgia;
+  font-size: inherit;
+}
+body {
+  font-family: inherit;
+  font-size: inherit;
+  font-variant-numeric: lining-nums;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #562435;
+  text-align: center;
+  margin: 1rem 0;
+}
+h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #562435;
+  margin-top: 2rem;
+  border-top: 1px solid #562435;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+}
+div.answer {
+  font-weight: bold;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<h1>Lab 6 - Decision Trees</h1>
+
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
+library("readr")
+library("dplyr")
+library("tree")
+titanic3 = data.frame(read_csv("titanic3")[,c("survived", "embarked", "sex", "sibsp", "parch", "fare")])
+titanic3$embarked = as.factor(titanic3$embarked)
+titanic3$sex = as.factor(titanic3$sex)
+```
+
+<h2>Question 1.</h2>
+
+$survived$ is a numeric value.&nbsp;&nbsp;We need to first transform it to a categorical value.&nbsp;&nbsp;Use `titanic3\$survived = as.factor(titanic3\$survived)` to do so.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
+titanic3$survived = as.factor(titanic3$survived)
+```
+
+<h2>Question 2.</h2>
+
+Fit a classification tree using all the observations.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+tree.titanic3 = tree(survived ~ .-survived, titanic3)
+```
+
+Find out which variables actually contribute to building this tree.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+summary(tree.titanic3)$used
+```
+
+Plot the tree.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
+plot(tree.titanic3)
+text(tree.titanic3, pretty=0)
+```
+
+<h2>Question 3.</h2>
+
+Now we are going to estimate the test error.
+
+Split the observations into a training set and a test set.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+set.seed(2)
+training.set = sample(nrow(titanic3), nrow(titanic3)/2)
+test.set = titanic3[-training.set,]
+```
+
+Build the tree using the training set and plot the tree.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
+tree.titanic3.train = tree(survived ~ .-survived, titanic3, subset=training.set)
+summary(tree.titanic3.train)
+plot(tree.titanic3.train)
+text(tree.titanic3.train, pretty=0)
+```
+
+Evaluate its performance on the test data.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+yhat = predict(tree.titanic3.train, newdata=test.set, type="class")
+y = titanic3[-training.set, "survived"]
+mean(y != yhat)
+```
+
+<h2>Question 4</h2>
+
+Next, let's find out whether pruning the tree might lead to improved results.
+
+Use `cv.tree()` to determine the optimal level of tree complexity.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center"}
+set.seed(3)
+cv.titanic3 = cv.tree(tree.titanic3.train, FUN=prune.misclass)
+plot(cv.titanic3$size, cv.titanic3$dev, type="b", col="#562435", pch=19, cex=1.5)
+```
+
+According to the result, do you think pruning is necessary?&nbsp;&nbsp;Why or why not?
+
+<div class="answer">
+The above chart suggests there is not much difference in `dev` across 2, 4 or 8 so pruning is unlikely to produce a noticeable advantage.
+</div>
+
+If you think it is necessary, or would like to give it a try, use `prune.misclass()` to prune the tree and evaluate the performance of the pruned tree.
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+prune.titanic3 = prune.misclass(tree.titanic3.train, best=4)
+plot(prune.titanic3)
+text(prune.titanic3, pretty=0)
+```
+
+```{r echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA}
+prune.yhat = predict(prune.titanic3, test.set, type="class")
+mean(prune.yhat != y)
+```
+
+<div class="answer">The error rate of the pruned tree (4 predictors) is the same as that of the unpruned tree (5 predictors) so there is little advantage to pruning save for simplification from dropping one predictor.</div>

@@ -1,0 +1,539 @@
+---
+output:
+  html_document: default
+---
+<style>
+html {font-size: inherit;}
+body {
+  font-family: Ubuntu;
+  font-size: 1rem;
+}
+.hero {
+  background-color: #562435;
+  color: white;
+  padding: 0.5rem 1rem;
+}
+.coursework {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.q {
+  font-weight: bold;
+  color: #562435;
+}
+div.q {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #562435;
+  font-variant: all-small-caps;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+@media print {
+  body {
+    font-family: Georgia;
+  }
+  .hero {
+    padding-left: 0;
+  }
+}
+</style>
+
+<div class="hero">
+  <div class="coursework">Big Data Analytics - Coursework 1</div>
+  <div class="student">Student name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hammond Mason</div>
+  <div class="student">Student number: 99005944</div>
+  <div class="student">Programme:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M.Sc.(Data Science)</div>
+</div>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<div class="q">1\. Statistical Learning Methods</div>
+
+<span class="q">For each of parts (a) through (d) indicate whether we would generally expect the performance of a flexible statistical learning method to be better or worse than an inflexible method.&nbsp;&nbsp;Justify your answer.</span>
+
+<br/><span class="q">\(a) The sample size $n$ is extremely large and the number of predictors is small.</span>
+
+The more 'flexible' the method, the more predictors are added to attempt a better fit to the sample data.&nbsp;&nbsp;This can lead to 'overfitting' where additional predictors result in a better fit but, in doing so, capture some of the randomness ('noise') inherent in the sample data.&nbsp;&nbsp;This can result in either or both of (a) a deterioration in the predictive power of the model, or (b) the inclusion of predictors whose effect on the predicted variable is difficult to rationalise.
+
+When the sample size is extremely large, there is greater potential for overfitting.&nbsp;&nbsp;However, when the number of predictors for that sample is small, the chance of overfitting is reduced.&nbsp;&nbsp;Consequently, the performance of a flexible method would generally be better than an inflexible method in such a case.
+
+<br/><span class="q">\(b) The number of predictors $p$ is extremely large and the number of observations is small.</span>
+
+With a small number of observations and a large number of predictors available to choose from, it is very easy to overfit a flexible model - we just keep adding predictors until our model fits the data as best it can.&nbsp;&nbsp;Consequently, in such a case, an inflexible model will generally provide better performance than a flexible model.
+
+<br/><span class="q">\(c) The relationship between the predictors and response is highly non-linear.</span>
+
+When there is a high degree of non-linearity, an inflexible method with a restricted set of predictors, is unlikely to capture the full relationship and a flexible method would generally outperform it.
+
+<br/><span class="q">\(d) The variance of the error terms, ie. $\sigma$^2^ = Var($\epsilon$), is extremely high.</span>
+
+A basic tenet of statistical learning is that an observed random variable, $Y$, is influenced by one or more other random variables, $X$, in a way that can be described by the mathematical equation:
+
+<br><center>
+$Y = f(X) + \epsilon$
+</center><br>
+
+where $f(X)$ is the function describing the process by which $Y$ is influenced by $X$ and $\epsilon$ represents all other influences on $Y$.&nbsp;&nbsp;It is assumed further, that $\epsilon$ has a constant variance, an expected value of zero and is unrelated to the $X$ variables, ie. $\epsilon$ is "white noise".
+
+The statistical learning process consists of identifying a model, $\hat{f}(X)$, that best estimates the true process, $f(X)$.&nbsp;&nbsp;As a result of this estimation process, we have the mathematical relationship: 
+
+<br><center>
+$Y = \hat{f}(X) + u$
+</center><br>
+
+Where $u$ are the 'residual' terms, being the mathematical by-product of the (observed) $Y$ values and the model's estimates from the (observed) $X$ values, ie: 
+
+<br><center>
+$u = Y - \hat{f}(X)$
+</center><br>
+
+It is important to understand $u \neq \epsilon$.&nbsp;&nbsp;The $u$ are directly influenced by our choice of model, $\hat{f}(X)$, as the above equation shows, but $\epsilon$ is unrelated to our choice of model.&nbsp;&nbsp;Regardless of how well our statistical model approximates $f(X)$, it has no impact on $\epsilon$.&nbsp;&nbsp;Consequently, the choice of flexible vs. inflexible is irrelevant.&nbsp;&nbsp;If Var($\epsilon$) is extremely high, then it matters not which model type we choose: any model will have very little power to explain the variability in our observed $Y$ as most of this variability is due to $\epsilon$ which, by definition, is unrelated to $f(X)$.
+
+<br/><div class="q">2. Descriptive Analysis</div>
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+oral = c(4, 1, 4, 5, 3, 2, 3, 4, 3, 5, 2, 2, 4, 3, 5, 5, 1, 1, 1, 2)
+written = c(2, 3, 1, 4, 2, 5, 3, 1, 2, 1, 2, 2, 1, 1, 2, 3, 1, 2, 3, 4)
+```
+
+<br/><span class="q">\(a) Use R to calculate the mean, the mode, the median, the variance and the standard deviation of the oral and written exams separately and together as well.</span>
+
+R does not have an in-built function to find the Mode of a vector so we must create our own:
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+get_mode = function(v) {
+  uniqv = unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+```
+
+Calculating our statistics separately:
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+mean(oral)
+get_mode(oral)
+median(oral)
+var(oral)
+sd(written)
+
+mean(written)
+get_mode(written)
+median(written)
+var(written)
+sd(written)
+```
+
+Calculating them together:
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+exam.results = data.frame(oral, written)
+sapply(exam.results, mean)
+sapply(exam.results, get_mode)
+sapply(exam.results, median)
+sapply(exam.results, var)
+sapply(exam.results, sd)
+```
+
+<br/><span class="q">\(b) Find the covariance and correlation between the oral and written exam scores.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+cov(oral, written)
+cor(oral, written)
+```
+
+<br/><span class="q">\(c) Is there a positive or negative or no correlation between the two?</span>
+
+The (Pearson) correlation coefficient of `r cor(oral, written)` indicates a slight negative _linear_ correlation between Oral and Written exam results.
+
+<br/><span class="q">\(d) Is there causation between the two? Justify your answers.</span>
+
+The presence of correlation never implies causation.&nbsp;&nbsp;Causation is a proposition developed from reasoned argument.&nbsp;&nbsp;Correlation can be used to support (or refute) such a proposition but it can never indicate causation.
+
+<br/><div class="q">3\. Descriptive Analysis</div>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+library("ISLR")
+head(Auto)
+```
+
+<br/><span class="q">\(a)  Which of the predictors are quantitative, and which are qualitative?</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+quantVars= c("mpg", "displacement", "horsepower", "weight", "acceleration")
+qualVars = c("cylinders", "year", "origin", "name")
+```
+
+<br/><span class="q">\(b)  What is the range of each quantitative predictor? You can answer this using the `range()` function.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+rng = sapply(Auto[quantVars], range)
+rownames(rng) = c("Min", "Max")
+rng
+```
+
+<br/><span class="q">\(c)  What is the mean and standard deviation of each quantitative predictor?</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+Mean = sapply(Auto[quantVars], mean)
+Stdev= sapply(Auto[quantVars], sd)
+rbind(Mean, Stdev)
+```
+
+<br/><span class="q">\(d)  Now remove the 10th through 85th observations. What is the range, mean, and standard deviation of each predictor in the subset of the data that remains?</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+e = 10:85
+subSet = Auto[-e,]
+myData = sapply(subSet[quantVars], range)
+rownames(myData) = c("Min", "Max")
+Mean = sapply(subSet[quantVars], mean)
+Stdev= sapply(subSet[quantVars], sd)
+myData = rbind(myData, Mean)
+myData = rbind(myData, Stdev)
+myData
+```
+
+<br/><span class="q">\(e)  Using the full data set, investigate the predictors graphically, using scatterplots or other tools of your choice.&nbsp;&nbsp;Create some plots highlighting the relationships among the predictors.&nbsp;&nbsp;Comment on your findings.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA, fig.align="center"}
+pairs(Auto[quantVars], main="Scatterplots of Pairs of Predictor Variables")
+```
+
+The above chart depicts scatterplots for all combinations of the quantitative variables.&nbsp;&nbsp;Viewing the charts in "columns", we can see the following:
+
+The "mpg" variable displays a non-linear relationship with displacement, horsepower and weight.&nbsp;&nbsp;However, there appears no obvious relationship with acceleration as the data is more scattered that the others and no obvious relationship (linear or otherwise) is apparent.
+
+"displacement" appears linearly related to horsepower, weight and acceleration.&nbsp;&nbsp;Its relationship with mpg has already been noted in 1. above.
+
+There appears to be linear relationships between "horsepower"" and weight, and horsepower and acceleration, although the latter may be slightly non-linear.&nbsp;&nbsp;Horsepower's relationship to the other quantitative variables has already been described in 1, and 2. above.
+
+"weight" appears to be related to acceleration (weight's relationship to other variables is discribed above).&nbsp;&nbsp;However, there is a lot of dispersion between weight and acceleration suggesting the relationiship is not strong.
+
+<br/><span class="q">\(f)  Suppose that we wish to predict gas mileage ($mpg$) on the basis of the other variables. Do your plots suggest that any of the other variables might be useful in predicting $mpg$? Justify your answer.</span>
+
+As explained in the previous question, "mpg" appears to have a non-linear relationship with each of displacement, horsepower and weight.&nbsp;&nbsp;It appears there is little, if any, relationship between mpg and acceleration.
+
+<br/><div class="q">4\. Linear Regression</div>  
+
+<br/><span class="q">\(a)  Use the `lm()` function to perform a simple linear regression with $mpg$ as the response and $horsepower$ as the predictor.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+horsepower = Auto$horsepower
+mpg = Auto$mpg
+ols = lm(mpg ~ horsepower)
+```
+
+<span class="q">Use the `summary()` function to print the results.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+summary(ols)
+```
+
+<span class="q">Comment on the output.&nbsp;&nbsp;For example:</span>  
+<br/><span class="q">i\. Is there a relationship between the predictor and the response?</span>
+
+Based on our sample of observations, we estimate the coefficient of the predictor to be `r round(summary(ols)$coefficients[2,1],6)` with a standard error of `r round(summary(ols)$coefficients[2,2],6)`.&nbsp;&nbsp;Consequently, our estimate is `r round(summary(ols)$coefficients[2,1] / summary(ols)$coefficients[2,2],2)` standard deviations from zero.&nbsp;&nbsp;This ratio is the t-value (shown in the above summary). 
+     
+If the true value of $\beta$~1~ were zero, then the chances of observing an estimate of `r round(summary(ols)$coefficients[2,1],6)` (being `r round(summary(ols)$coefficients[2,3],2)` standard deviations away from this hypothesised true value) is extremely low.&nbsp;&nbsp;This is what the extremely low p-value of `r format(summary(ols)$coefficients[2,4], scientific=TRUE)` confirms.
+     
+Hence, it is highly unlikely that we obtained our `r round(summary(ols)$coefficients[2,1],6)` estimate by pure chance.&nbsp;&nbsp;It is more likely that the true value of $\beta$~1~ is not zero, ie. there is a relationship between the predictor and the response.
+
+<br/><span class="q">ii\.  How strong is the relationship between the predictor and the response?</span>
+
+The R-Squared statistic tells us that `r round(summary(ols)$r.squared,4) * 100`% of the variability in $mpg$ can be explained by $horsepower$.&nbsp;&nbsp;While `r round(summary(ols)$r.squared,4) * 100`% is a significant proportion, it must be remembered that over a third (`r round(1 - summary(ols)$r.squared,4) * 100`%) of the variability in $mpg$ still remains unexplained. 
+
+<br/><span class="q">iii\. Is the relationship between the predictor and the response positive or negative?</span>
+
+As shown in the above summary table, there is a negative relationship between $mpg$ and $horsepower$ - the more horsepower, the lower the mpg, and vice versa.
+
+<br/><span class="q">iv\.  What is the predicted $mpg$ associated with a $horsepower$ of 98?&nbsp;&nbsp;What are the associated 95% confidence and prediction intervals?</span>
+
+At a $horsepower$ of 98, the predicted $mpg$ is `r round(predict(ols, data.frame(horsepower=98), level=0.95, interval="confidence")[1],5)`.&nbsp;&nbsp;This is our point estimate of the average $mpg$ of a car that this level of $horsepower$.  
+     
+The 95% confidence interval for this average is [`r round(predict(ols, data.frame(horsepower=98), level=0.95, interval="confidence")[2],5)`, `r round(predict(ols, data.frame(horsepower=98), level=0.95, interval="confidence")[3],5)`].
+     
+The 95% prediction interval for any single car is [`r round(predict(ols, data.frame(horsepower=98), level=0.95, interval="prediction")[2],5)`, `r round(predict(ols, data.frame(horsepower=98), level=0.95, interval="prediction")[3],5)`].
+     
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+predict(ols, data.frame(horsepower=98), level=0.95, interval="confidence")
+predict(ols, data.frame(horsepower=98), level=0.95, interval="prediction")
+```
+          
+<br/><span class="q">(b)  Plot the response and the predictor. Use the `abline()` function to display the least squares regression line.</span>
+
+```{r, fig.align="center"}
+plot(mpg ~ horsepower, 
+  pch=19,
+  cex=0.5, 
+  main="mpg against horsepower"
+)
+
+newx = seq(min(horsepower), max(horsepower), len=100)
+
+preds = predict(ols, newdata=data.frame(horsepower=newx), interval="prediction")
+transparent_green = rgb(0, 255, 0, alpha=20, maxColorValue = 255)
+polygon(
+  c(rev(newx), newx), 
+  c(rev(preds[ ,"upr"]), preds[ ,"lwr"]), 
+  col = transparent_green, 
+  border = NA
+)
+lines(newx, preds[,"lwr"], col="darkgreen", lwd=2)
+lines(newx, preds[,"upr"], col="darkgreen", lwd=2)
+
+confs = predict(ols, newdata=data.frame(horsepower=newx), interval="confidence")
+transparent_red = rgb(255, 0, 0, alpha=80, maxColorValue = 255)
+
+polygon(
+  c(rev(newx), newx), 
+  c(rev(confs[ ,"upr"]), confs[ ,"lwr"]), 
+  col = transparent_red, 
+  border = NA
+)
+lines(newx, confs[,"lwr"], col="red", lwd=2)
+lines(newx, confs[,"upr"], col="red", lwd=2)
+
+abline(ols, lty="dashed")
+
+legend(150, 40,
+  c("Regression", "Confidence Interval", "Prediction Interval"), 
+  lty=c("dashed", "solid", "solid"),
+  lwd=c(2, 2, 2),
+  col=c("black", "red", "darkgreen"),
+  bty="n"
+)
+```
+
+<br/><div class="q">5\. Logistic Regression</div>  
+
+<br/><span class="q">Using the Boston data set, fit classification models in order to predict whether a given suburb has a crime rate above or below the median.&nbsp;&nbsp;Explore logistic regression models using various subsets of the predictors.&nbsp;&nbsp;Describe your findings.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+library("MASS")
+df = data.frame("hc" = ifelse(Boston$crim > median(Boston$crim), 1, 0), Boston[, -1])
+```
+
+As we will be repeating the logistic regression process for a variety of different predictor variables, it will be useful to put our logic into a single function and then call that function when needed, passing in the various predictor variables desired.&nbsp;&nbsp;The function will provide details of the coefficients of these variables as well as an indicator of how well the model fits the training data ("fit accuracy") and how accurately it predicts ("prediction accuracy") in the test sample using LOOCV.
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+library("boot")
+l = function(x) {
+  fit = glm(as.formula(paste("hc ~", paste(x, collapse = " + "))), binomial, df)
+  fit.coefs = round(summary(fit)$coefficients, 5)
+  fit.preds = ifelse(predict(fit, type="response") > 0.5, 1, 0)
+  fit.accuracy = mean(fit.preds == df$hc)
+  predict.accuracy = 1 - cv.glm(df, fit, K=5)$delta[1]
+  cat("\n")
+  print(fit.coefs)
+  cat(paste("Accuracy (fit):", round(fit.accuracy * 100, 1), "%\n"))
+  cat(paste("Accuracy (predict):", round(predict.accuracy * 100, 1), "%\n"))
+  return(predict.accuracy)
+}
+```
+
+Using the above function, we can examine the case where all predictor variables are used in the regression:
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+r = l(c("zn", "indus", "chas", "nox", "rm", "age", "dis", "rad", "tax", "ptratio", "black", "lstat", "medv"))
+```
+
+Which shows the model correctly predicts `r round(r * 100, 1)`% of cases in the training data set, indicating the model fits the training data quite well.&nbsp;&nbsp;However, there are a number of predictor variables whose estimated value is statistically insignificant from zero at a 0.05 p-value.&nbsp;&nbsp;Removing these variables from the regression gives: 
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+r = l(c("zn", "nox", "dis", "rad", "tax", "ptratio", "black", "medv"))
+```
+
+The accuracy of the model has declined slightly to `r round(r * 100, 1)`% but all of the predictor variables are statistically significant (at a 0.05 p-value).
+
+<br/><div class="q">6\. Resampling Methods</div>  
+
+<br/><span class="q">Suppose that we use some statistical learning method to make a prediction for the response $y$ for a particular value of the predictor $x$.&nbsp;&nbsp;Carefully describe how we might estimate the standard deviation of our prediction.</span>
+
+To estimate the standard deviation of our prediction, we can take the square root of the average squared deviation of the actual observation $(y_i)$ from the value predicted by the model $(\hat{y}_i)$.&nbsp;&nbsp;Mathematically:
+<br/><br/>
+<center>
+
+$Prediction \mspace{5mu} standard \mspace{5mu} deviation = s =  \sqrt{\displaystyle\frac{1}{n} .\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}$
+
+</center>
+<br/>
+where $y_i$ is the observed $i$th value and $\hat{y}_i$ is the model's prediction for the $i$th value.
+
+If we under-predict, then $y_i - \hat{y}_i$ will be positive and ,if we over-predict, it will be negative.&nbsp;&nbsp;Using the _square_ of these deviations eliminates the problem of aggregating offsetting over- and under- predictions - which can hide the level of variability in our prediction model.  For example, if the deviations were -7, +4, -3, +5, +1 the sum would be zero.&nbsp;&nbsp;Using the sum of squares, however, we get 100 and the average squared deviation is 20.
+
+This average squared deviation is called the __Mean Squared Deviation__ (MSE) and, when calculating it for our predictions, we use the $y_i$ observations from the _test_ sample.&nbsp;&nbsp;Of course, we calculate the parameters of our prediction model using the training data set, but calculating the MSE using this training data just gives an indication of how well the model 'fits' the training data - it says nothing about the model's predictive power. 
+
+To get an indication of the model's predictive power, we calculate the MSE on the test data and take the square root of the result to arrive at the standard deviation.&nbsp;&nbsp;If the assumption is that the errors (not the residuals - see the discussion in Question 1d above) are normally distributed, then this standard deviation can be used to make statements about the model's predictive power.&nbsp;&nbsp;For example, in 19 out of 20 predictions we expect the true $y_i$ value to fall within a range of 1.96 standard deviations either side of the model's predicted value.&nbsp;&nbsp;Obviously, a model with a lower standard deviation, has a 'tighter' band and, consequently, has better predictive power that one with a larger standard deviation.
+
+While this MSE-based method works well in the regression situation, the classification scenario requires a different approach.&nbsp;&nbsp;In a classification situation, $y_i$ is no longer a continuous random variable.&nbsp;&nbsp;Instead, it is discrete and binary, ie. it follows a Bernoulli process.&nbsp;&nbsp;Consequently, the the squared deviation is also binary - it's either been correctly predicted $(y_i = \hat{y}_i)$ or not $(y_i \neq \hat{y}_i)$.&nbsp;&nbsp;There is no in-between.&nbsp;&nbsp;In such a construction, the MSE has little value for comparing the predictive power of competing models.
+
+For classification problems, statements about a model's prediction accuracy are done using the __Error Rate__:
+<br/><br/>
+<center>
+$Error \mspace{5mu} Rate = \displaystyle\frac{1}{n} .\displaystyle\sum_{i=1}^n \mathcal H(y_i)$
+</center>
+<br/>
+where $\mathcal H$ is the Heavyside function:
+<br/><br/>
+<center>
+$\begin{equation}
+  \mathcal H(y_i) =
+    \begin{cases}
+      1 & \text{if $\hat{y}_i \neq y_i$}\\
+      0 & \text{otherwise}
+    \end{cases}       
+\end{equation}$
+</center>
+<br/>
+Here we can see that if, in a test sample of 100 observations, if our model fails to correctly classify 10 $y_i$s then the Error Rate is 0.1, ie. 10%.&nbsp;&nbsp;Different classification models that produce different error rates, allows comparison.&nbsp;&nbsp;As is the case with Regression, we calculate Error Rate using the _test_ data set to assess predictive power. 
+
+<br/><div class="q">7\. Resampling Methods</div>  
+
+<br/><span class="q">We will now perform cross-validation on a simulated data set.</span>
+
+<br/><span class="q">(a) Generate a simulated data set as follows:</span>
+
+```
+set.seed(500)
+y = rnorm(500)
+x = 4-rnorm(500)
+y = x - 2*x^2 + 3*x^4 + rnorm(500)
+```
+
+As the above will be repeated for different seeds in later questions, the following function will be used to generate a data set for a given seed, $s$:
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+getSeededData = function(s) {
+  set.seed(s)
+  y = rnorm(500)
+  x = 4-rnorm(500)
+  y = x - 2*x^2 + 3*x^4 + rnorm(500)
+  df= data.frame("y"=y, "x1"=x, "x2"=x^2, "x3"=x^3, "x4"=x^4)
+  return(df)
+}
+```
+
+<br/><span class="q">In this data set, what is $n$ and what is $p$?</span>
+
+$n$ is the number of observations, ie. $n$ = 500.<br/>
+$p$ is the number of predictors, ie. $p$ = 3 (x, x^2^, x^4^). 
+
+<br/><span class="q">Write out the model used to generate the data in equation form.</span>
+<br/>
+<br/>
+<center>
+$y = x - 2x^2 + 3x^4 + \epsilon$
+</center>
+
+<br/><span class="q">(b) Create a scatterplot of X against Y.&nbsp;&nbsp;Comment on what you find.</span>
+
+```{r, fig.align="center"}
+df = getSeededData(500)
+plot(df$x1, df$y, xlab="X", ylab="Y", main="Y on X", pch=19, cex=0.5, col=rgb(86, 36, 53, maxColorValue = 255))
+```
+
+From the above plot, it is clear the relationship between $X$ and $Y$ is non-linear.&nbsp;&nbsp;While there is evidence of variability in $x$, the `rnorm(500)` term in $y$ has little visible impact as the random variates are small (mean=0 and sd=1) in comparison to the much larger deterministic component of $y$.&nbsp;&nbsp;Hence, the plot looks like a smooth line.&nbsp;&nbsp;We can see the randomness if we zoom in, as we do in the next chart which zooms in on the x=(3, 3.1) and y=(200, 300):
+
+```{r, fig.align="center"}
+plot(df$x1, df$y, xlab="X", ylab="Y", main="Y on X", pch=19, cex=0.5, col=rgb(86, 36, 53, maxColorValue = 255), xlim=c(3,3.1), ylim=c(200,300))
+```
+
+From this plot, we can see the points do not fit on a smooth line/curve.
+
+<br/><span class="q">(c) Set the seed to be 23, and then compute the LOOCV and 10-fold CV errors that result from fitting the following four models using least squares.&nbsp;&nbsp;Note you may find it helpful to use the data.frame() function to create a single data set containing both $X$ and $Y$.</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+df = getSeededData(23)
+library("boot")
+```
+
+As we will be calculating LOOCV and 10-fold CV repeatedly, we shall use the following function to encapsulate and simplify the code:
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+showMyCVs = function(fit) {
+  loocv = (cv.glm(df, fit))$delta[1]
+  kfold = (cv.glm(df, fit, K=10))$delta[1]
+  cat(paste("LOOCV =", loocv, ", 10-fold CV =", kfold))
+}
+```
+
+<br/><span class="q">i\. &nbsp;&nbsp;$Y = \beta_0 + \beta_1 X + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1, data=df))
+```
+
+<br/><span class="q">ii\. &nbsp;$Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2, data=df))
+```
+
+<br/><span class="q">iii\. $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2+x3, data=df))
+```
+
+<br/><span class="q">iv\. &nbsp;$Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \beta_4 X^4 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2+x3+x4, data=df))
+```
+  
+<br/><span class="q">(d) Repeat (c) using random seed 46, and report your results.&nbsp;&nbsp;Are your results the same as what you got in (c)?&nbsp;&nbsp;Why?</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+df = getSeededData(46)
+```
+
+<br/><span class="q">i\. &nbsp;&nbsp;$Y = \beta_0 + \beta_1 X + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1, data=df))
+```
+
+<br/><span class="q">ii\. &nbsp;$Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2, data=df))
+```
+
+<br/><span class="q">iii\. $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2+x3, data=df))
+```
+
+<br/><span class="q">iv\. &nbsp;$Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \beta_4 X^4 + \epsilon$</span>
+
+```{r, collapse=TRUE, prompt=TRUE, comment=NA}
+showMyCVs(glm(y ~ x1+x2+x3+x4, data=df))
+```
+
+The results are similar to, but not the same as, those in (c).&nbsp;&nbsp;Due to the very nature of the sampling process, different samples (from the same population) will give rise to different estimates from the same statistical method.&nbsp;&nbsp;By generating different sets from different random numbers our results demonstrate this. 
+
+<br/><span class="q">(e) Which of the models in (c) had the smallest LOOCV and 10-fold CV error?&nbsp;&nbsp;Is this what you expected?&nbsp;&nbsp;Explain your answer.</span>
+
+Unsurprisingly, the most flexible model (iv) had the lowest cross-validation error under either approach (LOOCV or K-fold).&nbsp;&nbsp;This was expected as the data generating function that generated the $y$ values was also a 4th-order polynomial.
+
+<br/><span class="q">(f) Comment on the statistical significance of the coefficient estimates that results from fitting each of the models in (c) using least squares.&nbsp;&nbsp;Do these results agree with the conclusions drawn based on the cross-validation results?</span>
+
+```{r, collapse=TRUE, prompt=FALSE, comment=NA}
+summary(glm(y ~ x1, data=df))$coefficients
+
+summary(glm(y ~ x1+x2, data=df))$coefficients
+
+summary(glm(y ~ x1+x2+x3, data=df))$coefficients
+
+summary(glm(y ~ x1+x2+x3+x4, data=df))$coefficients
+```
+
+We can see all coefficients of models i., ii. and iii. are statistically significant.&nbsp;&nbsp;Their p-values are either at or near zero.&nbsp;&nbsp;In these models, all three predictors influence $y$ - including $x^3$ which we know from the true data generating function, does not influence $y$.&nbsp;&nbsp;Furthermore, the estimated values for the coefficients are quite different from the true values of 1, -2, 0 and 3, for $x$, $x^2$, $x^3$ and $x^4$ respectively.
+
+For model iv., however, only the 4th predictor ($x^4$) is statistically significant.&nbsp;&nbsp;All other predictors have high p-values such that it is not possible to reject the null hypothesis that the true value of the coefficient is zero.  The estimate of the coefficient of $x^4$ is `r summary(glm(y ~ x1+x2+x3+x4, data=df))$coefficients[5, 1]` which is very close to the true value of 3.
+
+The fact that each model has, at least, one coefficient that is statistically significant from zero is in accordance with the cross-validation results above.

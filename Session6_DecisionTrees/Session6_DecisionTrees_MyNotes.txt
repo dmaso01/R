@@ -1,0 +1,25 @@
+1. Fit a Decision Tree to Training Data:
+
+	library("tree")
+	fit.tree = tree(y ~ x, data=, subset=train)
+
+2. Generate Predictions on Test Data:
+
+	yhat = predict(fit.tree, newdata=test, type="class")
+
+3. Calculate Error Rate:
+
+	Regression:	mean((y - yhat)^2)	# MSE
+	Classification:	mean(y != yhat) 	# Error Rate
+
+4. Determine if pruning will help:
+
+	Regression:	cv.tree(fit.tree) 	# default FUN=prune.tree
+	Classification:	cv.tree(fit.tree, FUN=prune.misclass)
+
+5. Prune a tree:
+
+	Regression:	prune.tree(fit.tree, best=)
+	Classification:	prune.misclass(fit.tree, best=)
+			OR
+			prune.tree(fit.tree. best=, method="misclass") ????
