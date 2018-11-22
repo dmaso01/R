@@ -24,7 +24,6 @@ h2 {
   color: #562435;
   margin-top: 2rem;
   border-top: 2px solid #562435;
-  padding-bottom: 1rem;
 }
 h2 span {
   background-color: #562435;
@@ -45,7 +44,7 @@ knitr::opts_chunk$set(echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.al
 
 <h2><span>Question 1</span></h2>
 
-<div class="question">`survived` is a numeric value.&nbsp&nbsp;We need to first transform it to a categorical value and save it as a new variable `survived01`.&nbsp;&nbsp;Use `titanic3$survived01 = as.factor(titanic3$survived)` to do so and check that this variable has been included in the dataset.</div>
+<div class="question">`survived` is a numeric value.&nbsp;&nbsp;We need to first transform it to a categorical value and save it as a new variable `survived01`.&nbsp;&nbsp;Use `titanic3$survived01 = as.factor(titanic3$survived)` to do so and check that this variable has been included in the dataset.</div>
 
 ```{r}
 library(dplyr)
@@ -80,16 +79,49 @@ survived01.test = t3$survived01[-train]
 <h2><span>Question 4</span></h2>
 
 <div class="question">Use the training dataset to build a bagged model for:</br>
-&nbsp;&nbsp;&nbsp;&nbsp;y: survived</br>
+&nbsp;&nbsp;&nbsp;&nbsp;y: `survived`</br>
 &nbsp;&nbsp;&nbsp;&nbsp;x: all the features other than `survived` and `survived01`</br>
 Compare the mean error rate on the test dataset.</div>
 
 ```{r}
 set.seed(6)
-t3.bag = randomForest(survived ~ .-survived01, data=t3, subset=train, mtry=7, importance=TRUE)
-t3.bag
-t3.pred = predict(t3.bag, newdata=test)
-t3.pred.class = ifelse(t3.pred <= 0.5, "0", "1")
-mean(t3.pred.class != survived.test)
+t3.bag.reg = randomForest(survived ~ .-survived01, data=t3, subset=train, mtry=7, importance=TRUE)
+t3.bag.reg
+t3.pred.reg = predict(t3.bag.reg, newdata=test)
+t3.pred.cls = ifelse(t3.pred.reg <= 0.5, "0", "1")
+mean(t3.pred.cls != survived.test)
 ```
 
+<h2><span>Question 5</span></h2>
+
+<div class="question">Using the same training and test datasets, build a bagged model for:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;y: `survived01`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;x: all the features other than `survived` and `survived01`<br/>
+a\. Find out how many trees your model has built and the OOB error.<br/>
+b\. Compute the mean error rate on the training dataset.<br/></div>
+
+```{r}
+t3.bag.cls = randomForest(survived01 ~ .-survived, data=t3, subset=train, mtry=7, importance=TRUE)
+t3.bag.cls
+(t3.bag.cls$confusion[2,1] + t3.bag.cls$confusion[1,2]) / t3.bag.cls$ntree
+
+```
+
+<h2><span>Question 6</span></h2>
+
+<div class="question">Plot the variable importance plot for the two bagged models you built in 4) and 5) and comment whether the importance coincides.</div>
+
+```{r}
+importance(t3.bag.reg)
+varImpPlot(t3.bag.reg)
+importance(t3.bag.cls)
+varImpPlot(t3.bag.cls)
+```
+
+<h2><span>Question 7</span></h2>
+
+<div class="question">Plot a graph that shows the test error rate of a single tree (red dashed line), the mean test error rate for majority vote (black curve) and the test error rates for averaging the probabilities (blue curve), both in relation to the number of trees.&nbsp;&nbsp;Add a legend if you can.</div>
+
+```{r}
+
+```
