@@ -1,3 +1,6 @@
+SESSION 6
+=========
+
 1. Fit a Decision Tree to Training Data:
 
 	library("tree")
@@ -23,3 +26,21 @@
 	Classification:	prune.misclass(fit.tree, best=)
 			OR
 			prune.tree(fit.tree. best=, method="misclass") ????
+
+SESSION 7
+=========
+
+1. Fit a Decision Tree to Training Data:
+
+	library("randomForest")
+	fit.bag = randomForest(y ~ x, data=, subset=train, mtry=, importance=TRUE)
+
+x. Out-Of-Bag Error Rate estimate:
+
+	fit.bag$err.rate[fit.bag$ntree, "OOB"]
+
+x. Relative Importance of predictors:
+
+	importance(fit.bag)
+
+

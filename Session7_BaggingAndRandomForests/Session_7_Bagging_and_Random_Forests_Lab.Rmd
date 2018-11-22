@@ -1,0 +1,95 @@
+---
+output: html_document
+---
+<style>
+html {
+  font-family: Georgia;
+  font-size: inherit;
+}
+body {
+  font-family: inherit;
+  font-size: inherit;
+  font-variant-numeric: lining-nums;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #562435;
+  text-align: center;
+  margin: 1rem 0;
+}
+h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #562435;
+  margin-top: 2rem;
+  border-top: 2px solid #562435;
+  padding-bottom: 1rem;
+}
+h2 span {
+  background-color: #562435;
+  color: white;
+  padding: 0 0.5rem 0.2rem;
+}
+div.question {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center")
+```
+
+<h1>Lab 7 - Bagging and Random Forests</h1>
+
+<h2><span>Question 1</span></h2>
+
+<div class="question">`survived` is a numeric value.&nbsp&nbsp;We need to first transform it to a categorical value and save it as a new variable `survived01`.&nbsp;&nbsp;Use `titanic3$survived01 = as.factor(titanic3$survived)` to do so and check that this variable has been included in the dataset.</div>
+
+```{r}
+library(dplyr)
+t3 = read.csv("titanic3")
+t3 = select(t3, -name, -ticket, -boat, -body, -home.dest, -cabin)
+t3$survived01 = as.factor(t3$survived)
+head(t3)
+```
+
+<h2><span>Question 2</span></h2>
+
+<div class="question">Install the package `randomForest` and include this in your code.&nbsp;&nbsp;In order to call the `randomForest()` function, all the missing value rows need to be dealt with.&nbsp;&nbsp;The simplest way is to remove those rows.&nbsp;&nbsp;Use `titanic3 = na.omit(titanic3)` to do that.</div>
+
+```{r}
+library(randomForest)
+t3 = na.omit(t3)
+```
+
+<h2><span>Question 3</span></h2>
+
+<div class="question">Use a seed to set half of the dataset to be the training dataset and the other half to be the test dataset.</div>
+
+```{r}
+set.seed(8)
+train = sample(nrow(t3), nrow(t3)/2)
+test = t3[-train, ]
+x_test = test[, -c(2, 9)]
+survived.test = t3$survived[-train]
+survived01.test = t3$survived01[-train]
+```
+
+<h2><span>Question 4</span></h2>
+
+<div class="question">Use the training dataset to build a bagged model for:</br>
+&nbsp;&nbsp;&nbsp;&nbsp;y: survived</br>
+&nbsp;&nbsp;&nbsp;&nbsp;x: all the features other than `survived` and `survived01`</br>
+Compare the mean error rate on the test dataset.</div>
+
+```{r}
+set.seed(6)
+t3.bag = randomForest(survived ~ .-survived01, data=t3, subset=train, mtry=7, importance=TRUE)
+t3.bag
+t3.pred = predict(t3.bag, newdata=test)
+t3.pred.class = ifelse(t3.pred <= 0.5, "0", "1")
+mean(t3.pred.class != survived.test)
+```
+
