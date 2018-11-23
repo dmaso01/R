@@ -33,7 +33,7 @@ SESSION 7
 1. Fit a Decision Tree to Training Data:
 
 	library("randomForest")
-	fit.bag = randomForest(y ~ x, data=, subset=train, mtry=, importance=TRUE)
+	fit.bag = randomForest(y ~ x, data=, subset=train, mtry=, ntree=, importance=TRUE)
 
 x. Out-Of-Bag Error Rate estimate:
 

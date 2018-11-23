@@ -1,0 +1,184 @@
+---
+output:
+  html_document: default
+---
+<link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
+<style>
+html {
+  font-family: Georgia;
+  font-size: inherit;
+}
+body {
+  font-family: inherit;
+  font-size: inherit;
+  font-variant-numeric: lining-nums;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  margin-top: 1rem;
+  border-gradient: 20px;
+}
+div.hero {
+  font-family: 'Cinzel', Georgia;
+  background-image: linear-gradient(to bottom right, #562435, #78505D, #562435);
+  color: white;
+  padding: 1rem 1.6rem 1.5rem;
+  border-radius: 0 30px;
+}
+h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #562435;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-top: 2px solid #562435;
+}
+h2 span {
+  background-color: #562435;
+  color: white;
+  padding: 0 0.5rem 0.2rem;
+}
+div.question {
+  font-weight: bold;
+  color: #562435;
+  margin-bottom: 1rem;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, collapse=TRUE, prompt=FALSE, comment=NA, fig.align="center")
+```
+
+<div class="hero">
+<h1>Big Data Analytics - Coursework 2</h1>
+<h3>
+Student name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hammond Mason<br/>
+Student number:&nbsp;&nbsp;99005944<br/>
+Programme:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M.Sc.(Data Science)<br/>
+</h3>
+</div>
+
+<h2><span>Question 1 - Decision Trees</span></h2>
+
+<div class="question">(a) Sketch the tree corresponding to the partition of the particular space illustrated in the left-hand panel of the figure above.&nbsp;&nbsp;The numbers inside the box indicate the mean of Y within each region.</div>
+
+```{r}
+```
+
+<div class="question">(b) Create a diagram similar to the left-hand panel of the figure, using the tree illustrated in the right-hand panel of the same figure.&nbsp;&nbsp;You should divide up the predictor space into the correct regions, and indicate the mean for each region.</div>
+
+```{r}
+```
+
+<h2><span>Question 2 - Regression Trees</span></h2>
+
+<div class="question">In the lab, a classification tree was applied to the `Carseats` data set after converting `Sales` into a qualitative response variable.&nbsp;&nbsp;Now we will seek to predict `Sales` using regression trees and related approaches, treating the response as a quantitative variable.</div>
+
+<div class="question">(a) Split the data set into a training set and a test set.</div>
+
+<div class="question">(b) Fit a regression tree to the training set.&nbsp;&nbsp;Plot the tree, and interpret the results.&nbsp;&nbsp;What test error rate do you obtain?</div>
+
+<div class="question">(c) Use cross-validation in order to determine the optimal level of tree complexity.&nbsp;&nbsp;Does pruning the tree improve the test error rate?</div>
+
+<div class="question">(d) Use the bagging approach in order to analyze this data.&nbsp;&nbsp;What test error rate do you obtain?&nbsp;&nbsp;Use the `importance()` function to determine which variables are most important.</div>
+
+<div class="question">(e) Use random forests to analyze this data.&nbsp;&nbsp;What test error rate do you obtain?&nbsp;&nbsp;Use the `importance()` function to determine which variables are most important.&nbsp;&nbsp;Describe the effect of `m`, the number of variables considered at each split, on the error rate obtained.</div>
+
+<h2><span>Question 3 - Classification Trees</span></h2>
+
+<div class="question">This problem involves the `OJ` data set which is part of the `ISLR` package.</div>
+
+<div class="question">(a) Create a training `set` containing a random sample of 800 observations, and a test set containing the remaining observations</div>
+
+<div class="question">(b) Fit a tree to the training data, with `Purchase` as the response and the other variables as predictors.&nbsp;&nbsp;Use the `summary()` function to produce summary statistics about the tree, and describe the results obtained.&nbsp;&nbsp;What is the training error rate?&nbsp;&nbsp;How many terminal nodes does the tree have?</div>
+
+<div class="question">(c) Type in the name of the tree object in order to get a detailed text output.&nbsp;&nbsp;Pick one of the terminal nodes, and interpret the information displayed.</div>
+
+<div class="question">(d) Create a plot of the tree, and interpret the results.</div>
+
+<div class="question">(e) Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels.&nbsp;&nbsp;What is the test error rate?</div>
+
+<div class="question">(f) Apply the `cv.tree()` function to the training set in order to determine the optimal tree size.</div>
+
+<div class="question">(g) Produce a plot with tree size on the x-axis and cross-validated classification error rate on the y-axis.</div>
+
+<div class="question">(h) Which tree size corresponds to the lowest cross-validated classification error rate?</div>
+
+<div class="question">(i) Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation.&nbsp;&nbsp;If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.</div>
+
+<div class="question">(j) Compare the training error rates between the pruned and unpruned trees.&nbsp;&nbsp;Which is higher?</div>
+
+<div class="question">(k) Compare the test error rates between the pruned and unpruned trees.&nbsp;&nbsp;Which is higher?</div>
+
+<h2><span>Question 4 - SVM</span></h2>
+
+<div class="question">In the problem, you will use vector approaches in order to predict whether a given car gets high or low gas mileage based on the `Auto` data set.</div>
+
+<div class="question">(a) Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.</div>
+
+<div class="question">(b) Fit a support vector classifier to the dat with various values of `cost`, in order to predict whether a car gets high or low gas mileage.&nbsp;&nbsp;Report the cross-validation errors associated with different values on this parmeter.&nbsp;&nbsp;Comment on your results.</div>
+
+<div class="question">(c) Now repeat (b), this time using SVMs with radial and polynomial basis kernels, with different values of `gamma` and `degree` and `cost`.&nbsp;&nbsp;Comment on your results.</div>
+
+<div class="question">(d) Make some plots to back up your assertions in (b) and (c).<br/><br/>_Hint_: In the lab, we used the `plot()` function for `svm` objects only in cases with $p$ = 2.&nbsp;&nbsp;When $p$ > 2 you an use the `plot()` function to create plots displaying pairs of variables at a time.&nbsp;&nbsp;Essentially, instead of typing `plot(svmfit, dat)` where `svmfit` contains your fitted model and `dat` is a data frame containing your data, you can type `plot(svmfit, at, x1 ~ x4)` in order to plot just the first and fourth variables.&nbsp;&nbsp;However, you must replace `x1` and `x4` with the correct variable names.&nbsp;&nbsp;To find out more type `?plot.svm`.</div>
+
+<h2><span>Question 5 - SVM</span></h2>
+
+<div class="question">Here we explore the maximal margin classifier on a toy data set.</div>
+
+<div class="question">(a) We are given $n$ = 7 observations in $p$ = 2 dimensions.&nbsp;&nbsp;For each observation, there is an associated class label.&nbsp;&nbsp;Sketch the observations.</div>
+
+<div class="question">(b) Sketch the optimal separating hyperplane and provide the equation for this hyperplane of the following form.</div>
+
+<center>
+$\beta_0 + \beta_1 X_1 + \beta_2 X_2 = 0$
+</center><br/>
+
+<div class="question">(c) Describe the classification rule for the maximal margin classifier.&nbsp;&nbsp;It should be something along the lines of "Classify to Red if $\beta_0 + \beta_1 X_1 + \beta_2 X_2 \gt 0$ and classify to Blue otherwise."&nbsp;&nbsp;Provide the values for $\beta_0$, $\beta_1$ and $\beta_2$.</div>
+
+<div class="question">(d) On your sketch indicate the margin for the maximal margin hyperplane.</div>
+
+<div class="question">(e) Indicate the support vectors for the maximal margin classifier.</div>
+
+<div class="question">(f) Argue that a slight movement of the seventh observation would not affect the maximal margin hyperplane.</div>
+
+<div class="question">(g) Sketch a hyperplane that is _not_ the optimal separating hyperplance and provide the equation for this hyperplane.</div>
+
+<div class="question">(h) Draw and additional observation on the plot so that the two classes are no longer separable by a hyperplane.</div>
+
+<h2><span>Question 6 - Hierarchical Clustering</span></h2>
+
+<div class="question">Consider the `USArrests` data.&nbsp;&nbsp;We will now perform hierarchical clustering on the states.</div>
+
+<div class="question">(a) Using hierarchical clustering with complete linkage and Euclidean distance, cluster the states.</div>
+
+<div class="question">(b) Cut the dendogram at a height that results in three distinct clusters.&nbsp;&nbsp;Which states belong to which clusters?</div>
+
+<div class="question">(c) Hierarchically cluster the states using complete linkage and Euclidean distance, after scaling the variables to have standard deviation one.</div>
+
+<div class="question">(d) What effect does scaling the variables have one the hierarchical clustering obtained?&nbsp;&nbsp;In your opinion, should the variables be scaled before the inter-observation dissimilarities are computed?&nbsp;&nbsp;Provide a justification for your answer.</div>
+
+<h2><span>Question 7 - PCA and K-Means Clustering</span></h2>
+
+<div class="question">In this problem, you will generate simulated data and then perform PCA and K-Means Clustering on the data.</div>
+
+<div class="question">(a) Generate a simulated data set with 20 observations in each of these classes (ie. 60 observations total) and 50 variables.<br/><br/>_Hint_: There are a number of functions in R that you can use to generate data.&nbsp;&nbsp;One example is the `rnorm()` function; `runif()` is another option.&nbsp;&nbsp;Be sure to add a mean shift to the observations in each class so that there are three distinct classes.</div>
+
+<div class="question">(b) Perform PCA on the 60 obserations and plot the first two principal components' eigenvector.&nbsp;&nbsp;Use a different colour to indicate the observations in each of the three classes.&nbsp;&nbsp;If the three classes appear separated in this plot, then continue on to part (c).&nbsp;&nbsp;If not, then return to part (a) and modify the simulation so that there is greater separation between the three classes.&nbsp;&nbsp;Do not continue to part (c) until the three classes show at least some separation in the first two principal component eigenvectors.</div>
+
+<div class="question">(c) Perform K-Means Clustering of the observations with K = 3.&nbsp;&nbsp;How well do the clusters that you obtained in K-Means Clustering compare to the true class labels?<br/><br/>_Hint_:You can use the `table()` function in R to compare the true class labels to the class labels obtained by clustering.&nbsp;&nbsp;Be careful how you interpret the resutls: K-Means Clustering will arbitrarily number the clusters, so you cannot simply check whether the true class labels and clustering labels are the same.</div>
+
+<div class="question">(d) Perform K-Means Clustering with K = 2.&nbsp;&nbsp;Describe your results.</div>
+
+<div class="question">(e) Now perform K-Means Clustering with K = 4 and describe your results.</div>
+
+<div class="question">(f) Now perform K-Means Clustering with K = 3 on the first two principal components rather than on the raw data.&nbsp;&nbsp;That is, perform K-Means Clustering on the 60 x 2 matrix of which the first column is the the first principal component's corresponding eigenvector and the second column is the second principal component's corresponding eigenvector.&nbsp;&nbsp;Comment on the results.</div>
+
+<div class="question">(g) Using the `scale()` function perform K-Means Clustering with K = 3 on the data after scaling each variable to have standard deviation of one.&nbsp;&nbsp;How do these results compare to those obtained in (b)?&nbsp;&nbsp;Explain.

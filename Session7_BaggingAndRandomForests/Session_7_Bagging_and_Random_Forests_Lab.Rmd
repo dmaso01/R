@@ -1,6 +1,8 @@
 ---
-output: html_document
+output:
+  html_document: default
 ---
+<link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
 <style>
 html {
   font-family: Georgia;
@@ -12,6 +14,7 @@ body {
   font-variant-numeric: lining-nums;
 }
 h1 {
+  font-family: 'Cinzel';
   font-size: 2rem;
   font-weight: bold;
   color: #562435;
@@ -32,6 +35,7 @@ h2 span {
 }
 div.question {
   font-weight: bold;
+  color: #562435;
   margin-bottom: 1rem;
 }
 </style>
@@ -121,6 +125,80 @@ varImpPlot(t3.bag.cls)
 <h2><span>Question 7</span></h2>
 
 <div class="question">Plot a graph that shows the test error rate of a single tree (red dashed line), the mean test error rate for majority vote (black curve) and the test error rates for averaging the probabilities (blue curve), both in relation to the number of trees.&nbsp;&nbsp;Add a legend if you can.</div>
+
+```{r warning=FALSE}
+set.seed(1)
+index.train = sample(nrow(t3), nrow(t3)/2)
+dataset.training = t3[train, ]
+dataset.test = t3[-train, ]
+y.actual = dataset.test[, 9]
+number.of.iterations = 100
+test.error.rate.mv = rep(0, number.of.iterations)
+test.error.rate.av = rep(0, number.of.iterations)
+for (i in 1:number.of.iterations) {
+  # Majority vote:
+  set.seed(6)
+  rf.fit.mv = randomForest(survived01 ~ .-survived, data=dataset.training, mtry=7, ntree=i, importance=TRUE)
+  y.predict.mv = predict(rf.fit.mv, newdata=dataset.test)
+  confuse.mv = table(y.predict.mv, y.actual)
+  test.error.rate.mv[i] = (confuse.mv[1,2] + confuse.mv[2,1]) / nrow(dataset.test)
+  # Averaging Probabilities:
+  set.seed(6)
+  rf.fit.av = randomForest(survived ~ .-survived01, data=dataset.training, mtry=7, ntree=i, imporance=TRUE)
+  y.predict.av = ifelse(predict(rf.fit.av, newdata=dataset.test) <= 0.5, "0", "1")
+  confuse.av = table(y.predict.av, y.actual)
+  test.error.rate.av[i] = (confuse.av[1,2] + confuse.av[2,1]) / nrow(dataset.test)
+}
+plot(test.error.rate.av,
+  col="blue",
+  type="l",
+  xlab="Number of Trees in Forest",
+  ylab="Error Rate (Test Dataset)",
+  main="Error Rates for Different Sized Forests",
+  ylim=c(0.19,0.30)
+)
+lines(test.error.rate.mv,
+  col="black",
+  type="l"
+)
+abline(h=test.error.rate.mv[1], col="red", lty=2)
+legend("topright",
+  c("single tree", "majority vote", "averaging probabilities"),
+  col=c("red", "black", "blue"),
+  lty=c(2, 1, 1)
+)
+```
+
+<h2><span>Question 8</span></h2>
+
+<div class="question">Plot a graph tht shows the best value of mtry for the random forest model
+&nbsp;&nbsp;&nbsp;&nbsp;y: `survived01`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;x: all the features other than `survived` and `survived01`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;mtry: range from 1 to 7<br/>
+</div>
+
+```{r warning=FALSE}
+m = 7
+test.error.rate = rep(0, m)
+for (i in 1:m) {
+  set.seed(6)
+  rf.fit = randomForest(survived ~ .-survived01, data=dataset.training, mtry=i, imporance=TRUE)
+  y.predict = ifelse(predict(rf.fit, newdata=dataset.test) <= 0.5, "0", "1")
+  confuse = table(y.predict, y.actual)
+  test.error.rate[i] = (confuse[1,2] + confuse[2,1]) / nrow(dataset.test)
+}
+plot(test.error.rate,
+  col="blue",
+  type="b",
+  xlab="mtry",
+  ylab="Error Rate (Test Dataset)",
+  main="Averaging Probability Error Rates for Different 'mtry' values"
+)
+```
+
+<h2><span>Question 9</span></h2>
+
+<div class="question">Play with mtry and ntree, plot a graph that shows test error rate vs. ntree for different mtry and find the best/reasonably good combination of mtry and ntree from the plot.&nbsp;&nbsp;Add a legend if you can.</div>
 
 ```{r}
 
